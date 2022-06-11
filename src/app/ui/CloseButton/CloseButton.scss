@@ -1,0 +1,32 @@
+@import "~app/assets/scss/bundle.scss";
+
+.close-button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	flex-shrink: 0;
+
+	width: var(--close-button-size, 1.75em);
+	height: var(--close-button-size, 1.75em);
+
+	background: $color-gray;
+	border-radius: 50%;
+	outline: 3px solid $color-white;
+
+	&--small {
+		--icon-size: 0.75em;
+		--close-button-size: 1.25em;
+	}
+
+	@include Mobile {
+		// Make buttons twice bigger 
+		--icon-size: calc(var(--icon-size) * 2);
+		--close-button-size: calc(var(--close-button-size) * 2);
+	}
+}
+
+.close-button__icon {
+	color: $color-white;
+	transform: rotate(45deg);
+}

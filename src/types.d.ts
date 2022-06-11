@@ -1,4 +1,4 @@
-export type URLType = `${"http" | "https"}://${string}`
+export type URLType = `${string}://${string}` | URLData
 
 
 export type URLData = `data:${string};${string}`

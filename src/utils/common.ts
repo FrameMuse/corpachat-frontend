@@ -131,3 +131,12 @@ export function minFill<T>(array: T[], minLevel?: number): T[] {
 export function isDictionary(object: unknown): object is Record<keyof unknown, unknown> {
   return object instanceof Object && object.constructor === Object
 }
+
+
+/**
+ * Generates "unique" file name
+ */
+export function getFileId(file?: File | null) {
+  if (file == null) return ""
+  return `${file.lastModified}-${file.size}-${file.name}`
+}

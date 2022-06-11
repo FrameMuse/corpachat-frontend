@@ -1,0 +1,53 @@
+@import "~app/assets/scss/bundle.scss";
+
+$image-height: 8.75em;
+
+.choose-image {
+	display: flex;
+	flex-wrap: wrap;
+	gap:1em;
+}
+
+.choose-image__chooser {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	height: $image-height;
+	aspect-ratio: 1.2;
+
+	border: 1px solid $color-gray;
+	border-radius: $border-radius-1;
+
+	cursor: pointer;
+}
+
+.choose-image__camera {
+	--icon-size: 2.75em;
+
+	color: $color-gray;
+}
+
+.choose-image__input {
+	display: none;
+}
+
+.choose-image__file {
+	display: flex;
+}
+
+.choose-image__image {
+	height: $image-height;
+	aspect-ratio: 1.2;
+
+	border-radius: $border-radius-1;
+	object-fit: cover;
+}
+
+.choose-image__remove {
+	position: absolute;
+	top: 0;
+	right: 0;
+
+	transform: translate(50%, -50%);
+}

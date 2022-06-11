@@ -15,11 +15,11 @@
 .input__input {
 	width: 100%;
 
-	color: $color-black-main;
+	color: $color-dark;
 	font-size: 1.5rem;
 
 	&::placeholder {
-		color: $color-gray-80;
+		color: $color-gray;
 		transition: 200ms ease color;
 	}
 

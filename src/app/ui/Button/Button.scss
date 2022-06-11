@@ -8,8 +8,8 @@
 	--button-color: #{$color-white};
 	--button-color-hover: #{$color-white};
 
-	--button-background: red;
-	--button-background-hover: #{getHoverColor(red)};
+	--button-background: #1957c3;
+	--button-background-hover: #{getHoverColor(#1957c3)};
 
 	--button-border-color: transparent;
 	--button-border-color-hover: transparent;
@@ -52,8 +52,8 @@
 	}
 
 	&--outline {
-		--button-color: red;
-		--button-color-hover: #{getHoverColor(red)};
+		--button-color: #1957c3;
+		--button-color-hover: #{getHoverColor(#1957c3)};
 
 		--button-background: transparent;
 		--button-background-hover: transparent;
@@ -73,8 +73,8 @@
 	}
 
 	&--white {
-		--button-color: red;
-		--button-color-hover: #{getHoverColor(red)};
+		--button-color: #1957c3;
+		--button-color-hover: #{getHoverColor(#1957c3)};
 
 		--button-background: #{$color-white};
 		--button-background-hover: #{getHoverColor($color-white)};
