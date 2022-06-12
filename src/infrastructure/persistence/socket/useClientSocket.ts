@@ -1,8 +1,8 @@
-import clientSocket from "./client"
+import ClientSocket from "./client"
 
 //! Should be refactored
 function useClientSocket() {
-  return clientSocket
+  return ClientSocket
 }
 
 export default useClientSocket

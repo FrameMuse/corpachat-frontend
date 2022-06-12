@@ -2,9 +2,8 @@ import "./Chat.scss"
 
 import Loader from "app/ui/Loader/Loader"
 import useAttach from "infrastructure/persistence/socket/useAttach"
-import useClientSocket from "infrastructure/persistence/socket/useClient"
-import { ReactNode, useEffect, useState } from "react"
-import { URLDataBase64 } from "types"
+import useTransmit from "infrastructure/persistence/socket/useTransmit"
+import { ReactNode, useEffect, useRef, useState } from "react"
 import { FileToURLDataBase64 } from "utils/common"
 
 import { ChatMessageType } from "./Chat.types"
@@ -13,14 +12,15 @@ import ChatSend from "./ChatSend"
 
 interface ChatProps {
   userId: number
-  authKey: string
+  defaultMessages?: ChatMessageType[]
 }
 
 function Chat(props: ChatProps) {
-  const clientSocket = useClientSocket()
-  const [messages, setMessages] = useState<ChatMessageType[]>([])
+  const messagesRef = useRef<HTMLDivElement | null>(null)
+  const [messages, setMessages] = useState<ChatMessageType[]>(props.defaultMessages ?? [])
 
   useAttach("CHAT_RECEIVE_MESSAGE", onChatReceiveMessage)
+  const transmitChatMessage = useTransmit("CHAT_SEND_MESSAGE")
 
   async function onSend(message: string, attachments: File[]) {
     if (message.length === 0 && attachments.length === 0) {
@@ -34,26 +34,27 @@ function Chat(props: ChatProps) {
       return
     }
 
-    clientSocket.transmit<{
-      auth_key: string
-      message: string
-      attachments?: URLDataBase64[]
-    }>("CHAT_SEND_MESSAGE", { auth_key: props.authKey, message, attachments: await Promise.all(attachments.map(FileToURLDataBase64)) })
+    transmitChatMessage({
+      message,
+      attachments: await Promise.all(attachments.map(FileToURLDataBase64))
+    })
   }
   function onChatReceiveMessage(message: ChatMessageType) {
     setMessages(messages => [...messages, message])
   }
 
+  useEffect(() => {
+    if (messagesRef.current == null) return
+
+    messagesRef.current.scrollTop = messagesRef.current.scrollHeight
+  }, [messages])
+
   return (
     <div className="chat">
       <div className="chat__body">
-        <div className="chat__messages">
+        <div className="chat__messages" ref={messagesRef}>
           {messages.map((message, index) => (
-            <AwaitPromise state={Promise.all(message.attachments?.map(getFileFromURL) || [])} key={index}>
-              {attachments => (
-                <ChatMessage message={message.message} attachments={attachments} onRight={props.userId === message.user_id} />
-              )}
-            </AwaitPromise>
+            <ChatMessage {...message} onRight={props.userId === message.user.id} key={index} />
           ))}
         </div>
       </div>

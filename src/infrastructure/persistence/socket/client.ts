@@ -1,3 +1,5 @@
+import SocketSendActions from "./data/send-actions"
+
 class Socket {
   private socket: WebSocket | null = null
   private callbacks: Map<Function, string> = new Map
@@ -12,12 +14,28 @@ class Socket {
     // })
   }
 
+  async tryOpen(tries = 15, timeout = 2500) {
+    for (let i = 0; i < tries; i++) {
+      try {
+        await this.open()
+        return
+      } catch (error) {
+        await new Promise(resolve => setTimeout(resolve, timeout))
+      }
+    }
+    throw new Error("Socket connection failed.")
+  }
+
   open() {
-    return new Promise<void>(resolve => {
-      this.socket = new WebSocket(this.url)
-      this.socket.addEventListener("open", () => {
-        resolve()
-      }, { once: true })
+    if (this.socket?.OPEN) return Promise.resolve()
+
+    return new Promise<void>((resolve, reject) => {
+      const authKey = localStorage.getItem("auth-key")
+      const url = new URL(this.url + "/" + authKey)
+
+      this.socket = new WebSocket(url)
+      this.socket.addEventListener("open", () => resolve(), { once: true })
+      this.socket.addEventListener("error", reject, { once: true })
 
       for (const [callback, type] of this.callbacks) {
         this.socket.addEventListener(type, callback as EventListener)
@@ -25,7 +43,7 @@ class Socket {
     })
   }
 
-  transmit<P extends Record<keyof never, unknown>, T extends string = string>(type: T, payload: P) {
+  transmit<A extends SocketSendActions>(type: A["type"], payload: A["payload"]) {
     this.socket?.send(JSON.stringify({ type, payload }))
   }
 
@@ -40,5 +58,10 @@ class Socket {
   }
 }
 
-const clientSocket = new Socket("ws://134.0.115.105:8998")
-export default clientSocket
+const ClientSocket = new Socket(process.env.REACT_APP_SOCKET_HOST)
+export default ClientSocket
+
+export function setAndTryOpenSocket(authKey: string) {
+  localStorage.setItem("auth-key", authKey)
+  return ClientSocket.tryOpen()
+}

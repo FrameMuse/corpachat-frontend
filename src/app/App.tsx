@@ -8,7 +8,7 @@ import { Provider } from "react-redux"
 import { BrowserRouter } from "react-router-dom"
 import { ToastContainer } from "react-toastify"
 
-import AppRoutes from "./AppRouter"
+import AppRoutes from "./AppRoutes"
 import CookiesNotice from "./containers/CookiesNotice/CookiesNotice"
 import ErrorBoundary from "./containers/ErrorBoundary/ErrorBoundary"
 import ErrorFallback from "./containers/ErrorFallback/ErrorFallback"

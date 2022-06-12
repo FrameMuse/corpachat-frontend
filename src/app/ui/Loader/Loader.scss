@@ -13,7 +13,7 @@
 		border: 3px solid var(--loader-color, rgba($color-white, 0.5));
 		border-right-color: var(--loader-part-color, rgba($color-white, 1));
 		border-radius: 50%;
-
+		font-size: var(--loader-size, 100%);
 		animation: 1s linear infinite spin;
 
 		@keyframes spin {

@@ -1,0 +1,35 @@
+@import "~app/assets/scss/bundle.scss";
+
+.tool-tip {
+	$translateX: -50%;
+	$translateY: -100%;
+
+	position: absolute;
+	top: -1em;
+	left: 50%;
+	transform: translate($translateX, -75%);
+	pointer-events: none;
+	opacity: 0;
+
+	width: max-content;
+	max-width: 35ch;
+
+	padding: 0.5em;
+	background: $color-white;
+	border-radius: $border-radius-1;
+	box-shadow: 0 0 8px -2px $color-gray;
+	transition: 250ms ease opacity, 250ms ease transform;
+
+	:hover>& {
+		opacity: 1;
+		transform: translate($translateX, $translateY);
+		transition-delay: 250ms;
+	}
+}
+
+.tool-tip__inner {
+	// font-size: $font-size-3;
+	text-align: center;
+	line-height: 1.25;
+	color: $color-dark;
+}

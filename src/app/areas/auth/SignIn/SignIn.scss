@@ -1,0 +1,25 @@
+@import "~app/assets/scss/bundle.scss";
+
+.sign-in {
+	display: grid;
+	gap: 2em;
+
+	width: 30em;
+	margin: 0 auto;
+
+	padding: 2em;
+	background: $color-white;
+	border: 1px solid rgba($color-dark, 0.1);
+	border-radius: 0.5em;
+	box-shadow: 0 0 6px rgba($color-dark, 0.1);
+}
+
+.sign-in__title {
+	margin: unset;
+	text-align: center;
+}
+
+.sign-in__inputs {
+	display: grid;
+	gap: 1em;
+}

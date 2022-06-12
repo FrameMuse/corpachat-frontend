@@ -1,0 +1,5 @@
+@import "~app/assets/scss/bundle.scss";
+
+.footer {
+	@include WidthLimit;
+}

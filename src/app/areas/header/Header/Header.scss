@@ -1,0 +1,13 @@
+@import "~app/assets/scss/bundle.scss";
+
+.header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	padding: 1em;
+	background: rgba($color-dark, 0.25);
+	border-radius: 0 0 $border-radius-2 $border-radius-2;
+
+	@include WidthLimit;
+}

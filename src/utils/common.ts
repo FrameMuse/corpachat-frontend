@@ -138,5 +138,5 @@ export function isDictionary(object: unknown): object is Record<keyof unknown, u
  */
 export function getFileId(file?: File | null) {
   if (file == null) return ""
-  return `${file.lastModified}-${file.size}-${file.name}`
+  return `${file.lastModified}-${file.size}-${file.name}-${file.type}`
 }

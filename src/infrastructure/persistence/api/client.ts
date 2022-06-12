@@ -1,4 +1,4 @@
-import { createClient } from "react-fetching-library"
+import { createClient, QueryResponse } from "react-fetching-library"
 
 import { cacheProvider } from "./cache"
 import { requestInterceptor, responseInterceptor } from "./interceptors"
@@ -32,3 +32,18 @@ if (process.env.NODE_ENV === "development") {
 
 export default ClientAPI
 
+export function isValidResponse<T>(response: QueryResponse<T>, throwError = false): response is Required<typeof response> {
+  if (response.error) {
+    if (throwError) {
+      throw response.errorObject
+    }
+
+    return false
+  }
+
+  if (response.headers == null || response.status == null) {
+    return false
+  }
+
+  return true
+}

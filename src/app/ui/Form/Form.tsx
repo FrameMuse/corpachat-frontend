@@ -1,52 +1,68 @@
-import { DetailedHTMLProps, FormEvent, FormHTMLAttributes } from "react"
-import { Enum } from "types"
-import { FileToURLDataBase64 } from "utils/common"
-import { ValuesOf } from "utils/types-utils"
+import "./Form.scss"
+
+import _ from "lodash"
+import { ChangeEvent, DetailedHTMLProps, FormEvent, FormHTMLAttributes, MutableRefObject } from "react"
+import { classWithModifiers, FileToURLDataBase64 } from "utils/common"
 
 type FormValue = string | string[] | number | number[] | boolean | null | undefined
 type FormValues = Record<string, FormValue>
 
-export interface FormState<V = FormValues> {
-  keys: keyof V[]
-  values: V
-}
-export interface FormStateEnum<E extends Enum<E>, V extends Record<ValuesOf<E>, FormValue>> {
-  keys: keyof V[]
-  values: V
+/**
+ * @param Key - Keys union (may be Enum)
+ * @param Value - Values union (may be any)
+ * 
+ * @example FormState<MyEnum, string>
+ * @example FormState<"myKey1" | "myKey2", number>
+ */
+export interface FormState<Key extends keyof never, Value> { // Type-safe Values
+  keys: (Key extends (String) ? Key : never)[]
+  values: Value extends { [P in Key]?: unknown } ? Pick<Value, Key> & Record<Exclude<keyof Value, Key>, unknown> : Record<Key, Value>
+  formData: FormData
 }
 
-interface FormProps<V> extends Omit<DetailedHTMLProps<FormHTMLAttributes<HTMLFormElement>, HTMLFormElement>, "onSubmit"> {
-  onSubmit?: (state: FormState<V>, event: FormEvent<HTMLFormElement>) => void
+interface FormProps<K extends keyof never, V> extends Omit<DetailedHTMLProps<FormHTMLAttributes<HTMLFormElement>, HTMLFormElement>, "onSubmit" | "onChange"> {
+  formRef?: MutableRefObject<HTMLFormElement | null>
+  onChange?: (state: FormState<K, V>, event: FormEvent<HTMLFormElement>) => void
+  onSubmit?: (state: FormState<K, V>, event: FormEvent<HTMLFormElement>) => void
 }
 
-function Form<V>(props: FormProps<V>) {
+function Form<K extends keyof never, V>(props: FormProps<K, V>) {
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    const formState = await getFormState(event.currentTarget.elements) as unknown as FormState<V>
+    const formState = (await getFormState(event.currentTarget)) as FormState<K, V>
 
     props.onSubmit?.(formState, event)
   }
+  async function onChange(event: ChangeEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    const formState = (await getFormState(event.currentTarget)) as FormState<K, V>
+
+    props.onChange?.(formState, event)
+  }
   return (
-    <form {...props} onSubmit={onSubmit} />
+    <form {..._.omit(props, "centered")} ref={props.formRef} className={classWithModifiers(props.className || "form")} onChange={onChange} onSubmit={onSubmit} />
   )
 }
 
-async function getFormState(elements: HTMLFormControlsCollection): Promise<{
+async function getFormState(form: HTMLFormElement): Promise<{
   keys: string[]
   values: FormValues
+  formData: FormData
 }> {
+  const formData = new FormData(form)
   const keys: string[] = []
-  for (const element of elements) {
+  for (const element of form.elements) {
     if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
       if (keys.includes(element.name)) continue
       keys.push(element.name)
     }
   }
 
-  const values: FormState["values"] = {}
+  const values: FormValues = {}
   for (const key of keys) {
-    const next = elements.namedItem(key)
+    const next = form.elements.namedItem(key)
 
     if (next instanceof HTMLInputElement) {
       if (next.checked) {
@@ -73,7 +89,7 @@ async function getFormState(elements: HTMLFormControlsCollection): Promise<{
     }
   }
 
-  return { keys, values }
+  return { keys, values, formData }
 }
 
 export default Form

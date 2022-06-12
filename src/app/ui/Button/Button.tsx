@@ -1,6 +1,6 @@
 import "./Button.scss"
 
-import { MouseEvent, MouseEventHandler, useState } from "react"
+import { MouseEvent, MouseEventHandler, useRef, useState } from "react"
 import ReactGA from "react-ga4"
 import { classMerge, classWithModifiers } from "utils/common"
 
@@ -10,13 +10,17 @@ import { ButtonBaseProps } from "./Button.types"
 interface ButtonProps extends ButtonBaseProps {
   type?: "reset" | "submit"
   eventLabel?: string
+  pending?: boolean
   disabled?: boolean
   await?: boolean
   onClick?: MouseEventHandler<HTMLButtonElement>
 }
 
 function Button(props: ButtonProps) {
+  const buttonRef = useRef<HTMLButtonElement | null>(null)
+
   const [pending, setPending] = useState(false)
+
   async function onClick(event: MouseEvent<HTMLButtonElement>) {
     if (props.await) {
       setPending(true)
@@ -39,10 +43,10 @@ function Button(props: ButtonProps) {
   if (props.size) modifiers.push(props.size)
   if (props.color) modifiers.push(props.color)
   if (props.outline) modifiers.push("outline")
-  if (pending) modifiers.push("pending")
+  if (props.pending || pending) modifiers.push("pending")
 
   return (
-    <button className={classMerge(classWithModifiers("button", ...modifiers), props.className)} type={props.type || "button"} disabled={props.disabled || pending} aria-busy={pending} onClick={onClick}>
+    <button className={classMerge(classWithModifiers("button", ...modifiers), props.className)} type={props.type || "button"} disabled={props.disabled || props.pending || pending} aria-busy={props.pending || pending} onClick={onClick} ref={buttonRef}>
       {props.iconLeft && (
         <div className="button__icon">{props.iconLeft}</div>
       )}

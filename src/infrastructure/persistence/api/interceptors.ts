@@ -11,7 +11,7 @@ import { Action, APIResponseError } from "./client.types"
 type Response<T = unknown> = QueryResponse<T & APIResponseError>
 
 export function endpointTransform(action: Action) {
-  const endpoint = process.env.REACT_APP_API_HOST + action.endpoint + "/"
+  const endpoint = process.env.REACT_APP_API_HOST + action.endpoint
   const query = createQuery(action.params)
 
   return endpoint + (query && "?" + query)
@@ -23,8 +23,9 @@ export function requestInterceptor() {
       ...action,
       endpoint: endpointTransform(action),
       headers: {
-        Authorization: !action.config?.skipAuth && localStorage.getItem("token") || "",
-        "Accept-Language": Localization.lang
+        auth_key: !action.config?.skipAuth && localStorage.getItem("auth-key") || "",
+        "Accept-Language": Localization.lang,
+        // "Content-Type": "application/json",
       }
     }
   }

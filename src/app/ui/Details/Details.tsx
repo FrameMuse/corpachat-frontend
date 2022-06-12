@@ -25,7 +25,7 @@ function Details(props: DetailsProps) {
       <div className="details__header" onClick={() => setExpanded(!expanded)}>
         <div className="details__left">
           {props.date && (
-            <div className="details__date">{humanizeDate("ru", props.date)}</div>
+            <div className="details__date">{humanizeDate(props.date)}</div>
           )}
           <div className="details__summary">{props.summary}</div>
         </div>

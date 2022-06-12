@@ -1,22 +1,32 @@
 @import "~app/assets/scss/bundle.scss";
 
 .input {
+	width: var(--input-width);
+}
+
+.input__appearance {
 	display: flex;
 	gap: 0.5em;
-
-	padding-bottom: 0.5em;
-	border-bottom: 1px solid rgba(gray, 0.2);
 
 	@include Mobile {
 		display: grid;
 	}
+
+	@include InputAppearance;
+
+	--loader-size: 75%;
+	--loader-color: #{rgba(black, 0.1)};
+	--loader-part-color: #{rgba(black, 0.5)};
 }
 
 .input__input {
 	width: 100%;
 
+	top: 0.5em;
+
 	color: $color-dark;
-	font-size: 1.5rem;
+	font-size: $font-size-3;
+	font-weight: 500;
 
 	&::placeholder {
 		color: $color-gray;
@@ -28,4 +38,66 @@
 	}
 
 	resize: vertical;
+}
+
+.input__label {
+	position: absolute;
+	top: 0;
+	transform: translateY(100%);
+
+	color: $color-gray;
+	transition: 200ms ease top, 200ms ease transform, 200ms ease font-size;
+
+	.input__input:focus+&,
+	.input__input[value]:not([value=""])+& {
+		top: 0;
+		transform: translateY(75%);
+
+		font-size: 75%;
+		// outline: 2px solid $color-white;
+		// background: $color-white;
+	}
+
+	pointer-events: none;
+}
+
+.input__tooltip {
+	position: absolute;
+	top: 0;
+	right: 1em;
+	transform: translateY(75%);
+
+	max-width: 45%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+
+	color: rgba(black, 0.5);
+
+	font-size: 75%;
+	font-weight: 600;
+
+	cursor: help;
+	transition: 250ms ease top, 250ms ease opacity, 250ms ease max-width, 250ms ease padding, 250ms ease background-color, 250ms ease box-shadow, 250ms ease transform, 250ms ease color, 250ms ease font-size;
+
+	&:hover {
+
+		padding: 0.5em;
+		background: #1957c3;
+		border-radius: $border-radius-1;
+		box-shadow: 0 0 8px -2px $color-gray;
+
+		color: $color-white;
+		font-size: 90%;
+
+		opacity: 1;
+		transform: translateY(0%);
+		transition-delay: 250ms;
+
+		max-width: 100vw;
+	}
+}
+
+.input__icon {
+	top: 0.5em;
 }

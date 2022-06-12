@@ -29,6 +29,10 @@
 
 	color: var(--button-color-hover);
 
+	&:focus-visible {
+		outline: 4px solid rgba(21, 82, 249, 0.5);
+	}
+
 	&:disabled:not(&--pending) {
 		opacity: 0.2;
 	}
@@ -49,6 +53,10 @@
 
 	&--small {
 		padding: 0.625em 0.75em;
+	}
+
+	&--big {
+		padding: 1em 1.25em;
 	}
 
 	&--outline {

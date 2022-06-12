@@ -1,3 +1,3 @@
-export function humanizeDate(lang: string, date: Date) {
-  return date.toLocaleString(lang)
+export function humanizeDate(date: Date) {
+  return date.toLocaleString("ru", { hour: "2-digit", minute: "2-digit" })
 }
