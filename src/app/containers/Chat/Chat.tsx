@@ -1,10 +1,10 @@
 import "./Chat.scss"
 
-import Loader from "app/ui/Loader/Loader"
 import useAttach from "infrastructure/persistence/socket/useAttach"
 import useTransmit from "infrastructure/persistence/socket/useTransmit"
-import { ReactNode, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { FileToURLDataBase64 } from "utils/common"
+import { encrypt } from "utils/crypto"
 
 import { ChatMessageType } from "./Chat.types"
 import ChatMessage from "./ChatMessage"
@@ -13,6 +13,10 @@ import ChatSend from "./ChatSend"
 interface ChatProps {
   userId: number
   defaultMessages?: ChatMessageType[]
+  /**
+   * Secret is used to encrypt and decrypt the messages.
+   */
+  secret?: string
 }
 
 function Chat(props: ChatProps) {
@@ -35,7 +39,7 @@ function Chat(props: ChatProps) {
     }
 
     transmitChatMessage({
-      message,
+      message: props.secret ? encrypt(message, props.secret).toString() : message,
       attachments: await Promise.all(attachments.map(FileToURLDataBase64))
     })
   }
@@ -54,7 +58,7 @@ function Chat(props: ChatProps) {
       <div className="chat__body">
         <div className="chat__messages" ref={messagesRef}>
           {messages.map((message, index) => (
-            <ChatMessage {...message} onRight={props.userId === message.user.id} key={index} />
+            <ChatMessage {...message} onRight={props.userId === message.user.id} secret={props.secret} key={index} />
           ))}
         </div>
       </div>
@@ -74,28 +78,4 @@ export async function getFileFromURL(url: string) {
   return new File(Uint8Array ? [Uint8Array] : [], fileName, { type: response.headers.get("content-type") || "image" })
 }
 
-interface AwaitPromiseProps<T> {
-  state: Promise<T>
-  children: (result: T) => ReactNode
-}
-
-function AwaitPromise<T>(props: AwaitPromiseProps<T>) {
-  const [result, setResult] = useState<T | null>(null)
-
-  useEffect(() => {
-    async function awaitPromises() {
-      // if (props.state instanceof Array) {
-      //   return await Promise.all(props.state)
-      // }
-      return await props.state
-    }
-
-    awaitPromises().then(setResult)
-  }, [props.children])
-
-  if (result === null) return <Loader />
-  return <>{props.children(result)}</>
-}
-
 export default Chat
-

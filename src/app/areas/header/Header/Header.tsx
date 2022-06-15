@@ -1,14 +1,12 @@
 import "./Header.scss"
 
-import { ReactNode } from "react"
+import Topbar from "../Topbar/Topbar"
 
-interface HeaderProps {
-  children?: ReactNode
-}
-
-function Header(props: HeaderProps) {
+function Header() {
   return (
-    <header className="header">{props.children}</header>
+    <header className="header">
+      <Topbar />
+    </header>
   )
 }
 

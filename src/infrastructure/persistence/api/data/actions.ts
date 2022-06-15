@@ -7,9 +7,10 @@ export const getUsername = (username: string): Action<{ exists: boolean }> => ({
   endpoint: `/username/${username}`,
 })
 
-export const getMessages = (): Action<{ messages: ChatMessageType[] }> => ({
+export const getMessages = (hash_summ = "0"): Action<{ messages: ChatMessageType[] }> => ({
   method: "GET",
   endpoint: `/messages`,
+  headers: { hash_summ }
 })
 
 export const postUserSignup = (body: { name: string, username: string, password: string }): Action<{ auth_key: string; user_id: number }> => ({
@@ -22,4 +23,9 @@ export const postUserSignin = (body: { username: string, password: string }): Ac
   method: "POST",
   endpoint: `/user/signin`,
   body,
+})
+
+export const postChatCreate = (): Action<{ hash_summ: string }> => ({
+  method: "POST",
+  endpoint: `/chat/create`,
 })

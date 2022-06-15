@@ -42,7 +42,7 @@ export function createQuery(queryObject?: Record<string | number, unknown> | nul
   const queryKeys = Object.keys(queryObject)
   const queryArray = queryKeys.map(key => {
     const value = queryObject[key]
-    if (value) {
+    if (value != null) {
       if (isDictionary(value)) {
         return createQuery(value)
       }

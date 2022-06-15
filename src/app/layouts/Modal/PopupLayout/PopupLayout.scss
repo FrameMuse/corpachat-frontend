@@ -1,0 +1,108 @@
+@import "~app/assets/scss/bundle.scss";
+
+$gap: 2em;
+
+.popup-layout {
+	@keyframes show {
+		from {
+			transform: translateY(75%);
+		}
+	}
+
+	@keyframes hide {
+		to {
+			transform: translateY(75%);
+		}
+	}
+
+	margin: auto;
+	animation: 250ms ease show forwards;
+	cursor: initial;
+
+	.modal:not(.modal--active) & {
+		animation: 250ms ease hide forwards;
+	}
+}
+
+.popup-layout__container {
+	display: grid;
+	gap: $gap;
+
+	width: var(--popup-width);
+	min-width: 15em;
+	padding: 2.5em 6em 3.5em;
+	background: $color-white;
+	border-radius: $border-radius-1;
+
+	@include Mobile {
+		width: 100vw;
+		height: 100vh;
+
+
+		border-radius: unset;
+		padding-inline: 3em;
+	}
+}
+
+.popup-layout__close {
+	--icon-size: 1.25em;
+	margin-top: -1em;
+	margin-left: auto;
+	margin-right: -4.5em;
+
+	@include Mobile {
+		margin-right: unset;
+	}
+}
+
+.popup-layout__inner {
+	display: grid;
+	align-content: baseline;
+	gap: $gap;
+
+	/* When passing only one child, it shows a desire to pass a wrapper (e.g. form element) */
+	&>:only-child {
+		display: grid;
+		align-content: baseline;
+		gap: $gap;
+	}
+
+	&--centered {
+		justify-items: center;
+		text-align: center;
+	}
+
+	&--push-left {
+		justify-items: left;
+	}
+
+	&--push-right {
+		justify-items: right;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5 {
+		margin: unset;
+		line-height: 1.25;
+	}
+
+	h1,
+	h2 {
+		text-transform: uppercase;
+	}
+
+	@include Mobile {
+		// justify-items: center;
+
+		&>:only-child {
+			justify-items: stretch;
+		}
+
+		& .buttons .button {
+			padding: 1em 1.25em;
+		}
+	}
+}

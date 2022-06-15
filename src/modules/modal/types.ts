@@ -2,7 +2,7 @@
 
 MIT License
 
-Copyright (c) 2022 Valery Zinchenko minicablestone@gmail.com
+Copyright (c) 2022 Valery Zinchenko
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -16,19 +16,19 @@ copies or substantial portions of the Software.
 
 */
 
-import { ReactNode } from "react"
+import { FunctionComponent } from "react"
 
-export type ModalComponent<P> = (props: P) => JSX.Element
+export type ModalComponent<Props = never> = FunctionComponent<Props>
 
 export interface ModalParams {
-  id: string | number
-  title: ReactNode
-  desc: ReactNode
+  id?: string | number
   closable: boolean
+  weak: boolean
+  fork: boolean
 }
 
-export interface ModalWindow<P = unknown> {
-  component: ModalComponent<Partial<ModalParams> & P>
-  params?: Partial<ModalParams> & P
+export interface ModalWindow<Params = unknown> {
+  component: ModalComponent<ModalParams & Params>
+  params: ModalParams & Params
   close: () => void
 }

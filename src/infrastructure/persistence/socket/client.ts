@@ -1,41 +1,88 @@
+import { createQuery } from "utils/common"
+
+import { SocketError } from "./client.errors"
+import { SocketSettings, SocketState } from "./client.types"
+import SocketReceiveActions from "./data/receive-actions"
 import SocketSendActions from "./data/send-actions"
 
 class Socket {
   private socket: WebSocket | null = null
   private callbacks: Map<Function, string> = new Map
-  constructor(readonly url: string) {
-    // this.socket = new WebSocket(url)
-
-    // this.socket.addEventListener("close", () => {
-    //   const interval = setInterval(() => {
-    //     if ()
-    //     this.socket = new WebSocket(url)
-    //   }, 1000)
-    // })
+  public state: SocketState = null
+  public error = false
+  public settings: SocketSettings = {
+    reconnection: {
+      delay: 2500,
+      attempts: 10
+    }
+  }
+  constructor(readonly url: string, settings?: Partial<SocketSettings>) {
+    this.settings = {
+      ...this.settings,
+      ...settings
+    }
   }
 
-  async tryOpen(tries = 15, timeout = 2500) {
-    for (let i = 0; i < tries; i++) {
+  // async tryOpen(tries = 15, timeout = 2500) {
+  //   for (let i = 0; i < tries; i++) {
+  //     try {
+  //       await this.open()
+  //       return
+  //     } catch (error) {
+  //       await new Promise(resolve => setTimeout(resolve, timeout))
+  //     }
+  //   }
+  //   throw new Error("Socket connection failed.")
+  // }
+
+  /**
+   * Tries to reconnect back to the socket.
+   * 
+   * @returns if the socket is reconnected
+   */
+  async reconnect(): Promise<boolean> {
+    if (this.error === false) return false
+
+    if (this.socket == null) {
+      throw new SocketError("Socket is not initialized.")
+    }
+
+    const reconnection = this.settings.reconnection
+    for (let i = 0; i < reconnection.attempts; i++) {
       try {
-        await this.open()
-        return
+        await this.new(this.socket.url)
+        if (!this.error) return false
+        return true
       } catch (error) {
-        await new Promise(resolve => setTimeout(resolve, timeout))
+        await new Promise(resolve => setTimeout(resolve, reconnection.delay))
       }
     }
-    throw new Error("Socket connection failed.")
+
+    return false
   }
 
-  open() {
-    if (this.socket?.OPEN) return Promise.resolve()
-
+  new(url: string | URL, protocols?: string | string[] | undefined) {
     return new Promise<void>((resolve, reject) => {
-      const authKey = localStorage.getItem("auth-key")
-      const url = new URL(this.url + "/" + authKey)
+      this.state = "connecting"
 
-      this.socket = new WebSocket(url)
-      this.socket.addEventListener("open", () => resolve(), { once: true })
-      this.socket.addEventListener("error", reject, { once: true })
+      const openEvent = () => {
+        this.state = "connected"
+        resolve()
+      }
+      const closeEvent = () => {
+        this.state = "disconnected"
+        reject()
+      }
+      const errorEvent = (event: Event) => {
+        console.log(event)
+        this.error = true
+        closeEvent()
+      }
+
+      this.socket = new WebSocket(url, protocols)
+      this.socket.addEventListener("open", openEvent, { once: true })
+      this.socket.addEventListener("error", closeEvent, { once: true })
+      this.socket.addEventListener("close", errorEvent, { once: true })
 
       for (const [callback, type] of this.callbacks) {
         this.socket.addEventListener(type, callback as EventListener)
@@ -43,9 +90,34 @@ class Socket {
     })
   }
 
+  /**
+   * Create a socket connect with extra parameters.
+   * 
+   * @param params - query params
+   * @returns @returns if the socket is connected
+   */
+  async connect(params?: Record<string, string | number>): Promise<boolean> {
+    const searchQuery = createQuery({ ...this.settings.defaultParams, ...params })
+    try {
+      await this.new(`${this.url}?${searchQuery}`)
+    } catch (error) {
+      console.log(6)
+      return this.reconnect()
+    }
+
+    return true
+  }
+
   transmit<A extends SocketSendActions>(type: A["type"], payload: A["payload"]) {
     this.socket?.send(JSON.stringify({ type, payload }))
   }
+
+  // receive<A extends SocketReceiveActions>(type: A["type"], callback: (payload: A["payload"]) => void) {
+  //   this.on("message", event => {
+  //     const payload = JSON.parse(event.data) as A["payload"]
+  //     callback(payload)
+  //   })
+  // }
 
   on<K extends keyof WebSocketEventMap>(type: K, listener: (this: WebSocket, ev: WebSocketEventMap[K]) => unknown) {
     this.socket?.addEventListener(type, listener)
@@ -58,10 +130,18 @@ class Socket {
   }
 }
 
-const ClientSocket = new Socket(process.env.REACT_APP_SOCKET_HOST)
-export default ClientSocket
+const ClientSocket = new Socket(process.env.REACT_APP_SOCKET_HOST, {
+  defaultParams: {
+    auth_key: localStorage.getItem("auth-key") ?? ""
+  }
+})
 
-export function setAndTryOpenSocket(authKey: string) {
-  localStorage.setItem("auth-key", authKey)
-  return ClientSocket.tryOpen()
-}
+// ClientSocket.receive("ERROR", () => {
+//   if (process.env.NODE_ENV === "development") {
+//     console.log("Socket error.")
+//   }
+
+//   ClientSocket.reconnect()
+// })
+
+export default ClientSocket

@@ -2,7 +2,7 @@
 
 MIT License
 
-Copyright (c) 2022 Valery Zinchenko minicablestone@gmail.com
+Copyright (c) 2022 Valery Zinchenko
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -16,9 +16,12 @@ copies or substantial portions of the Software.
 
 */
 
-import { createContext } from "react"
+import { useContext } from "react"
 
-import { ModalWindow } from "./Modal.types"
+import { modalContext } from "./context"
 
-const modalContext = createContext<ModalWindow | null>(null)
-export default modalContext
+export function useModal() {
+  const context = useContext(modalContext)
+  if (!context) throw new Error("ModalError: Out of Modal context")
+  return context
+}

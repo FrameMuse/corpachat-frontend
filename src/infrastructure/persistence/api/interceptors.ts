@@ -26,6 +26,7 @@ export function requestInterceptor() {
         auth_key: !action.config?.skipAuth && localStorage.getItem("auth-key") || "",
         "Accept-Language": Localization.lang,
         // "Content-Type": "application/json",
+        ...action.headers,
       }
     }
   }

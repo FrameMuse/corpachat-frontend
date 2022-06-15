@@ -2,6 +2,7 @@ import "app/assets/scss/base.scss"
 
 import ClientAPI from "infrastructure/persistence/api/client"
 import store from "infrastructure/persistence/redux/store"
+import { ModalContainer } from "modules/modal/container"
 import { ReactNode, Suspense } from "react"
 import { ClientContextProvider } from "react-fetching-library"
 import { Provider } from "react-redux"
@@ -12,7 +13,6 @@ import AppRoutes from "./AppRoutes"
 import CookiesNotice from "./containers/CookiesNotice/CookiesNotice"
 import ErrorBoundary from "./containers/ErrorBoundary/ErrorBoundary"
 import ErrorFallback from "./containers/ErrorFallback/ErrorFallback"
-import { ModalContainer } from "./containers/Modal/ModalContainer"
 
 function App() {
   return (
