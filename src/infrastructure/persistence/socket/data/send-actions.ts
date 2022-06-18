@@ -6,7 +6,7 @@ interface CHAT_SEND_MESSAGE extends SocketActionAny {
   type: "CHAT_SEND_MESSAGE",
   payload: {
     message: string
-    attachments?: URLDataBase64[]
+    attachments?: (URLDataBase64 | string)[]
   }
 }
 

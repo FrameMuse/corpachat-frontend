@@ -32,7 +32,7 @@ function SignIn(props: SignInProps) {
     <Form className="sign-in" onSubmit={onSubmit}>
       <h2 className="sign-in__title">Sign In</h2>
       <div className="sign-in__inputs">
-        <InputUsername className="sign-in__input" name={SignInFields.username} required autoComplete="username">Username</InputUsername>
+        <Input className="sign-in__input" name={SignInFields.username} required autoComplete="username">Username</Input>
         <Input className="sign-in__input" name={SignInFields.password} type="password" required autoComplete="current-password" tooltip="Enter your lovely password :>">Password</Input>
       </div>
       <Button size="big" type="submit" pending={pending}>Sign In</Button>

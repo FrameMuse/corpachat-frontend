@@ -7,10 +7,10 @@ export const getUsername = (username: string): Action<{ exists: boolean }> => ({
   endpoint: `/username/${username}`,
 })
 
-export const getMessages = (hash_summ = "0"): Action<{ messages: ChatMessageType[] }> => ({
+export const getMessages = (hash_summ = "0", offset = 0): Action<{ messages: ChatMessageType[] }> => ({
   method: "GET",
-  endpoint: `/messages`,
-  headers: { hash_summ }
+  endpoint: `/messages/${hash_summ}`,
+  params: { offset }
 })
 
 export const postUserSignup = (body: { name: string, username: string, password: string }): Action<{ auth_key: string; user_id: number }> => ({

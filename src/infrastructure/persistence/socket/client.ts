@@ -97,6 +97,8 @@ class Socket {
    * @returns @returns if the socket is connected
    */
   async connect(params?: Record<string, string | number>): Promise<boolean> {
+    this.socket?.close()
+
     const searchQuery = createQuery({ ...this.settings.defaultParams, ...params })
     try {
       await this.new(`${this.url}?${searchQuery}`)

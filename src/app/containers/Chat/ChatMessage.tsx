@@ -3,7 +3,7 @@ import "./Chat.scss"
 import _ from "lodash"
 import { ReactNode, useEffect, useState } from "react"
 import { classWithModifiers } from "utils/common"
-import { decrypt } from "utils/crypto"
+import { decrypt, decryptPure } from "utils/crypto"
 import { humanizeDate } from "utils/date"
 
 import { ChatMessageType } from "./Chat.types"
@@ -20,20 +20,23 @@ export interface ChatMessageProps extends ChatMessageType {
   secret?: string
 }
 
+const decryptIfNeeded = (message: string, secret?: string) => secret != null ? decrypt(message, secret) : message
+
 function ChatMessage(props: ChatMessageProps) {
   const createdAt = new Date(props.created_at)
-  const message = props.secret ? decrypt(props.message, props.secret) : props.message
+  const message = decryptIfNeeded(props.message, props.secret)
 
   const stillInSecret = props.secret != null && message === null
   return (
     <div className={classWithModifiers("chat-message", props.onRight && "on-right", stillInSecret && "still-in-secret")}>
       {/* <img src={props.avatar} alt="participant's avatar" className="chat-message__author-avatar" /> */}
       {props.attachments?.map((attachment, index) => (
+        console.log(attachment),
         <div className="chat-message__attachments" key={index}>
           <div className="chat-message-attachment">
-            <a href={attachment}>
-              <img src={attachment} alt="attachment" className="chat-message-attachment__image" />
-            </a>
+            {/* <a href={attachment}> */}
+            <img src={decryptIfNeeded(attachment, props.secret) || "[hidden]"} alt="attachment" className="chat-message-attachment__image" />
+            {/* </a> */}
           </div>
         </div>
       ))}
